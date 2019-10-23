@@ -1,0 +1,150 @@
+---
+title: <center>"Metabolic and Stress Physiology of Cottonmouth Snakes, *Agkistrodon
+  piscivorous*"</center>
+author: "<center> Molly Richard </center>"
+output:
+  html_notebook:
+    df_print: paged
+    highlight: breezedark
+    number_sections: no
+    rows.print: 10
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  html_document:
+    df_print: paged
+    toc: yes
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+## Abstract
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+library(dplyr)
+library(ggplot2)
+library(ggfortify)
+library(readr)
+library(tidyr)
+library(knitr)
+
+
+#import data
+data <- read_csv("prelimdata.csv")
+```
+
+```{r Clean up data, include=FALSE}
+data <- slice(data, -29)
+data <- within(data, SMR_Hour <- Average_MR_min*60)
+
+#Include random values for CORT levels 
+#rnmin <- data.frame(floor(runif(55, min = 10, max = 50)))
+#names(rnmin) <- c("CORTmin")
+#rnmin<-arrange(rnmin, CORTmin)
+#rnmax <- data.frame(floor(runif(55, min = 55, max = 200)))
+#names(rnmax) <- c("CORTmax")
+#rnmax<-arrange(rnmax, CORTmax)
+#rn <- cbind(rnmin, rnmax)
+#rn$CORTresp<- NA
+#rn <- within(rn, CORTresp <- CORTmax-CORTmin)
+
+#data <- arrange(data, Mass_g)
+#data <- cbind(data, rn)
+```
+
+## Preliminary data analysis
+
+### Graphs of SMR and Mass
+```{r}
+ggplot(data, aes(x= Mass_g , y= SMR_Hour))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method = "lm") +
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+lmtest <- lm(SMR_Hour ~ Mass_g, data = data)
+anova <- anova(lmtest)
+summary(lmtest)
+coef(lmtest)
+
+
+ggplot(data, aes(x= log(Mass_g) , y= log(SMR_Hour)))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method = "lm") +
+  xlab("Log Body Mass (g)") + ylab("Log Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+```
+
+### Remove the outlier 
+```{r remove the beast, echo=FALSE, warning=FALSE}
+data1 <- slice(data, -29)
+ggplot(data1, aes(x= Mass_g , y= SMR_Hour))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method="lm") +
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+
+lm1 <- lm(SMR_Hour ~ Mass_g, data = data1)
+anova1 <- anova(lm1)
+summary(lm1)
+coef(lm1)
+```
+### Males vs. Females
+```{r Graph all males and females, message=FALSE, warning=TRUE}
+
+ggplot(data, aes(x= Mass_g , y= SMR_Hour, shape=Sex, lty = Sex))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method = "lm") +
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+lm <- lm(SMR_Hour ~ Mass_g + Sex, data = data)
+anova <- anova(lm)
+summary(lm)
+```
+
+### Shedding vs Non-shedding individuals
+```{r Shedding vs not shedding, echo=FALSE, warning=FALSE}
+ggplot(data, aes(x= Mass_g , y= SMR_Hour, shape=Shedding_Chamber, lty = Shedding_Chamber))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method = "lm") +
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+
+Shed_SMR <- lm(SMR_Hour~ Mass_g + Shedding_Chamber, data = data)
+Shed_anova <- anova(Shed_SMR)
+summary(Shed_SMR)
+```
+
+### Individuals less than 500g
+```{r echo=FALSE}
+#Subset < 500g
+subset_SMR <- filter(data, Mass_g <  500)
+
+ggplot(subset_SMR, aes(x= Mass_g , y= SMR_Hour, shape=Sex, lty = Sex ))+
+  geom_point(aes(size = 10))+
+  geom_smooth(method="lm") +
+  xlab("Body Mass (g)") + ylab("Metabolic Rate (mL O2 hour-1)")+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")
+
+Sub_SMR <- lm(SMR_Hour~ Mass_g +Sex, data = subset_SMR)
+Sub_anova <- anova(Sub_SMR)
+summary(Sub_SMR)
+```
+
+### References
+R Core Team. 2013. R: A language and environment for statistical
+  computing. R Foundation for Statistical Computing, Vienna, Austria.
+  URL http://www.R-project.org/ .
+  
+
+
