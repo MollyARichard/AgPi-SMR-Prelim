@@ -3,6 +3,9 @@ title: <center>"Metabolic and Stress Physiology of Cottonmouth Snakes, *Agkistro
   piscivorous*"</center>
 author: "<center> Molly Richard </center>"
 output:
+  html_document:
+    df_print: paged
+    toc: yes
   html_notebook:
     df_print: paged
     highlight: breezedark
@@ -13,16 +16,10 @@ output:
     toc_float:
       collapsed: no
       smooth_scroll: yes
-  html_document:
-    df_print: paged
-    toc: yes
   pdf_document: default
 editor_options:
   chunk_output_type: inline
 ---
-
-## Abstract
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
@@ -82,6 +79,7 @@ ggplot(data, aes(x= log(Mass_g) , y= log(SMR_Hour)))+
 ```
 
 ### Remove the outlier 
+
 ```{r remove the beast, echo=FALSE, warning=FALSE}
 data1 <- slice(data, -29)
 ggplot(data1, aes(x= Mass_g , y= SMR_Hour))+
@@ -96,8 +94,9 @@ anova1 <- anova(lm1)
 summary(lm1)
 coef(lm1)
 ```
+
 ### Males vs. Females
-```{r Graph all males and females, message=FALSE, warning=TRUE}
+```{r Graph all males and females, message=FALSE, warning=FALSE}
 
 ggplot(data, aes(x= Mass_g , y= SMR_Hour, shape=Sex, lty = Sex))+
   geom_point(aes(size = 10))+
@@ -141,10 +140,6 @@ Sub_anova <- anova(Sub_SMR)
 summary(Sub_SMR)
 ```
 
-### References
-R Core Team. 2013. R: A language and environment for statistical
-  computing. R Foundation for Statistical Computing, Vienna, Austria.
-  URL http://www.R-project.org/ .
   
 
 
