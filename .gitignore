@@ -3,4 +3,6 @@
 .RData
 .Ruserdata
 *.csv
-*jpg
+*.jpg
+*.png
+*.Rmd
