@@ -148,7 +148,9 @@ summary(model1)
 
 #fits linear prediction lines (equal slopes)
 pred1 <- predict(model1) 
+```
 
+```{r include=FALSE}
 #plot same slopes model and show the adjusted mean using a dashed line
 ggplot(data = cbind(data, pred1), aes(x= Mass_g , y= SMR_Hour))+
   geom_point(aes(size = 10))+
@@ -159,11 +161,12 @@ ggplot(data = cbind(data, pred1), aes(x= Mass_g , y= SMR_Hour))+
   theme(legend.position = "none")+
   ggtitle("Body Mass and VO2 with Adjusted Mean")+
  theme(plot.title = element_text(hjust=0.5))
+```
 
+```{r include=FALSE}
 #adjust each data point to the mean of the covariate, along common slope
 comm.slope <-coef(model1)[2]
 data <- data%>%mutate(adjVO2=SMR_Hour-(comm.slope)*(Mass_g-X.mean))
-
 ```
 
 
