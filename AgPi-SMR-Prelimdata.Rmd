@@ -21,10 +21,7 @@ editor_options:
   chunk_output_type: inline
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -35,6 +32,7 @@ library(leaflet)
 library(maps)
 library(tidyverse)
 library(lme4)
+library(ggfortify)
 packages<-c("ggsn","leaflet","mapdata","maptools","OpenStreetMap","rgdal","smoothr","sf","sp","tidyverse","tmap")
 sapply(packages, require, character.only=T)
 
@@ -47,63 +45,34 @@ data <- slice(data, -29)
 data <- slice(data, -55)
 data <- within(data, SMR_Hour <- Average_MR_min*60)
 data <- within(data, RespCORT <- (StressCORT-BaseCORT))
-
-#Include random values for CORT levels 
-#rnmin <- data.frame(floor(runif(55, min = 10, max = 50)))
-#names(rnmin) <- c("CORTmin")
-#rnmin<-arrange(rnmin, CORTmin)
-#rnmax <- data.frame(floor(runif(55, min = 55, max = 200)))
-#names(rnmax) <- c("CORTmax")
-#rnmax<-arrange(rnmax, CORTmax)
-#rn <- cbind(rnmin, rnmax)
-#rn$CORTresp<- NA
-#rn <- within(rn, CORTresp <- CORTmax-CORTmin)
-
-#data <- arrange(data, Mass_g)
-#data <- cbind(data, rn)
 ```
 
 
-## Introduction
+## **Introduction**
+The analysis of glucocorticoid hormones has become an increasingly popular technique for measuring stress levels of animals facing environmental challenges. Glucocorticoids (GCs) are stress hormones released by the hypothalamus–pituitary–adrenal axis when a stressor starts a chain reaction in the body signaling the release of GCs to cope with the stressful situation. These stressors can originate from temperature changes, food shortages, reproductive strategies, social status or anthropogenic disturbances that require an alteration in physiology or behavior to meet basic physiological requirements. There are several hormones (e.g., cortisol, corticosterone) that are excreted during stressful events to aid in mediation.Behavioral responses have been shown to impact escape or avoidance efforts and reproductive success. Physiological responses can affect locomotor performance, immunity levels, reproductive physiology, and metabolism to provide immediate energy to overcome challenges.GCs play an important role in managing metabolism throughout the fluctuating baseline levels (homeostasis) and increased stressed levels (allostasis) by regulating glucose levels to meet energic needs of the various physiological processes. 
+<br />
+<br />
+<br />
+<br />
 
-## Objectives 
-The objectives of this study are to gain an understanding of the relationship between metabolism and CORT levels by comparing stress-induced changes in CORT with standard metabolic rates in cottonmouth snakes. Cottonmouths are a good species to investigate this relationship because they display a conspicuous behavioral threat (stress) response that is indicative of stress, the open-mouth bite-threat (Figure 1).
+## **Objectives**
+<div style= "float:right;position: relative; top: -60px;">
+![Fig 1. Cottonmouth displaying threat response behavior](photo/openmouth.jpg)
+</div>
+We proposed to assess the relationship between metabolism and corticosterone (CORT) levels by comparing baseline and stress-induced changes in CORT with standard metabolic rates (SMR) in cottonmouth snakes, *Agkistrodon piscivorous*.  
+<br />
+<br />
+<br />
+<br />
 
-![Figure 1. Cottonmouth displaying threat response behavior](photo/openmouth.jpg)
+## **Methods**
+![](photo/Statemap.png)</br>
+Fig 2. State map displaying location of field site at Bicentennial Trail Wetland, Cheatham Co., TN 
+</br>
+</br>
 
-## Methods 
-### Field Collection and Husbandry 
-Cottonmouth snakes (n=56) were collected opportunistically from May to October 2019 from a back-water slough formed by the Cumberland River and Sycamore Creek in Cheatham County, Tennessee. Blood samples were collected in the field (see below) before snakes were transported back to the lab to be housed in individual cages with a temperature gradient of 24-30°C and a 12:12 hour photoperiod (light:dark). Snakes were provided with water ad libitum, a size-appropriate hide box, and heat pad. 
-
-### Field Site
-```{r eval=FALSE, include=FALSE}
-state<- map_data("state")
-county <- map_data("county")
-swamp_point <- data.frame("x" = -87.098818, "y" =  36.291807)
-
-tn <- county %>% 
-  filter(region=="tennessee")
-
-chco <- county %>% 
-  filter(region=="tennessee") %>% 
-  filter(subregion=="cheatham")
-
-ggplot() + geom_polygon(data = state, aes(x=long, y = lat, group = group),
-                        fill = "white", color="black") + 
-           geom_polygon(data = tn, aes(x=long, y = lat, group = group),
-                        fill = "white", color="black") + 
-           geom_polygon(data = chco, aes(x=long, y = lat, group = group),
-                        fill = "yellow", color="black") + 
-           geom_point(data = swamp_point, aes(x=x,y=y), color="black") +
-  coord_fixed(xlim = c(-90, -82),  ylim = c(35, 36.7), ratio = 1) + 
-  xlab("Longitude") + ylab("Latitude") + ggtitle("Bicentennial Greenway Trail, Cheatham Co., TN")
-
-
-```
-
-
-### Capture locations
-```{r Leaflet map, eval=FALSE, include=FALSE}
+<div style= "float:right;position: relative;">
+```{r Leaflet map, echo=FALSE, fig.height=4, fig.width=5}
 #Provider tiles from http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 
 pal <- colorFactor(palette =c("blue", "red"), levels = c("M", "F"))
@@ -115,44 +84,59 @@ leaflet(data) %>%
  addLegend("bottomright", pal = pal, title = "Sex", values = ~Sex)
   
 ```
+Fig 3. Interactive map displaying capture locations with in Bicentennial Trail Wetland
+</div>
+* Cottonmouth snakes (n=52) collected from a back-water in Cheatham County, Tennessee
+* 100-200μl baseline blood sample to analyze circulating CORT levels from the caudal vein 
+* Stress sample collected one hour after the initial sample
+* ELISA corticosterone assay kits used to analyze plasma samples
+* Metabolic rates measured by rates of oxygen consumption (VO<sub>2</sub>)
+* Snakes were measured 8 times over a 24-hour period; most level 15 minutes of each 30-minute sample period was used to calculate the rate of gas exchange
+* Mean of the three lowest 15-minute measures during the trial period was determined SMR
+</br>
+</br>
 
-### Blood sampling and ELISA assays
-Snakes were captured using tongs and tubed before collecting a blood sample to analyze circulating CORT levels from the caudal vein on average with in ___min ± ___ (range __m-__ m) of initial contact (baseline level). The snakes were placed in a cloth bag to induce stress before a second blood sample was collected one hour after the initial sample (stress level, range __m-__m).  100-200 μl of blood was drawn from the caudal vein for each sample using a 1 ml heparinized syringe with a 25-gauge needle. Samples were stored in microcentrifuge tubes and placed on ice immediately following collection until transported back to the lab within 5 hours. Whole blood was centrifuged immediately upon return and plasma stored in 1.5ml microcentrifuge tubes at -80°C until assayed. ELISA corticosterone assay kits (900-097, Enzo Life Sciences Inc., Farmingdale, NY) were used to analyze the baseline and stress plasma samples.  Analysis procedures are based off previous studies conducted by Bailey et al (2009) and Sykes and Klukowski (2009).  Plasma and kit solutions were thawed to room temperature before aliquoting 20 μl plasma into microfuge tube. The Steroid Displacement Reagent (SDR) was prepared to manufacture’s specifications in a 1:100 solution of 1 ml of reagent to 100 ml of deionized water. 20 μl SDR was added to the microfuge tube and allow to sit for 10 minutes at room temperature. 560 μl assay buffer was added to the samples to create a 30-fold dilution effect.  Samples were rinsed to remove excess reagents and p-nitrophenyl phosphate substrate was added before being incubated for 60 min. The color created by the enzyme reaction ceased and was read by a spectrometer (Molecular Devices Optimax microplate reader) at 405 nm.   
+## **Preliminary Results**
+### Standard Metabolic Rate
 
-### Respirometry
-Snakes were housed for a minimum of 7 seven days prior to undergoing metabolic measurements to ensure a post-absorptive state. An open-flow respirometry system was used to determine individuals’ metabolic rates by measuring rates of oxygen consumption (VO2) (Withers 2001, Lighton 2008).  Individuals were weighed and placed in a size appropriate plexiglass chambers varying in size from 1.2 L to _____. Chambers were placed in a Percival Scientific incubator to maintain a constant temperature of 25°C and 12:12 hour (light:dark) photoperiod during the trials. An Ametek R-1 flow controller pumped room air through a Drierite drying column before air flow was allocated between 5 lines using a Sierra Instruments Top Trak and Smart Trak mass flow meters. The mass flow meters maintain predetermined air flow rates (15 to 160 mL/min) based on the size of the snake (Spencer et al). Four snakes were measured sequentially for 30 minutes each with a 15-minute baseline between chambers using a Sable Systems MUX flow multiplexer over the course of 72 hours. Air was then scrubbed of water vapor and CO2 using Drierite and Ascarite II drying columns. Air flow passed through another mass flow meter serving as a check on the predetermined flow rate before entering the Sable Systems FC-10 oxygen analyzer which was connected to a laptop computer recording O2 measurements every 3 seconds. Each snake was measured 8 times over a 24-hour period, and the most level 15 minutes of each 30-minute sample period was used to calculate the rate of gas exchange (Withers 1977) using LabAnalyst (Warthog Systems, http://warthog.ucr.edu). The mean of the three lowest 15-minute measures during the trial period was determined to be the Standard Metabolic Rate (SMR) in place of using the lowest measurement to avoid periods of apnea (Heatwole 1977). 
-
-## Preliminary data analysis
-
-### Graphs of SMR and Mass
 ```{r echo=FALSE}
-ggplot(data, aes(x= Mass_g , y= SMR_Hour))+
-  geom_point(aes(size = 10))+
-  geom_smooth(method = "lm") +
-  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "none")+
-  ggtitle("Body Mass and VO2")+
-  theme(plot.title = element_text(hjust=0.5))
+model2 <- lm(SMR_Hour ~ Mass_g + Sex, data = data)
+ggplot2::autoplot(model2)
+```
+</br> Fig 4. Autoplot for checking linear model assumptions for the effects of mass and sex on oxygen consumption. 
 
-  
-model <- lm(SMR_Hour ~ Mass_g, data = data)
-anova <- anova(model)
-summary(model)
-coef(model)
-
-
-ggplot(data, aes(x= log(Mass_g) , y= log(SMR_Hour)))+
-  geom_point(aes(size = 10))+
-  geom_smooth(method = "lm") +
-  xlab("Log Body Mass (g)") + ylab("Log Oxygen Consumption (mL O2 hour-1)")+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "none")+
-  ggtitle("Log Body Mass and Log VO2")+
- theme(plot.title = element_text(hjust=0.5))
+```{r echo=FALSE}
+anova(model2)
+summary(model2)
 ```
 
-```{r Adjusted Mass}
+```{r echo=FALSE, fig.height=4}
+ggplot(data, aes(x= Mass_g , y= SMR_Hour, shape=Sex, lty = Sex))+
+  geom_point(aes())+
+  geom_smooth(method = "lm") +
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 11)+
+  #theme(legend.position = "none")+
+  ggtitle("Effects of Sex and Mass on Oxygen Consumption")+
+  theme(plot.title = element_text(hjust=0.5))
+  
+```
+</br> Fig 5.  SMR (mL O<sub>2</sub> hour <sup>-1</sup>) as a function of body mass (p<0.05) and sex (p = 0.0596, R<sup>2</sup> = 0.7248).
+
+```{r echo=FALSE, fig.height=4}
+ggplot(data, aes(x= log(Mass_g) , y= log(SMR_Hour)))+
+  geom_point(aes())+
+  geom_smooth(method = "lm") +
+  xlab("Log Body Mass (g)") + ylab("Log Oxygen Consumption (mL O2 hour-1)")+
+  theme_bw(base_size = 11)+
+  theme(legend.position = "none")+
+  ggtitle("Log Body Mass and Log VO2")+
+ theme(plot.title = element_text(hjust=0.5))                                                    
+```
+</br> Fig 6.  Log of SMR (mL O<sub>2</sub> hour -1) as a function of the log of body mass (g).
+
+### Mass Adjusted VO<sub>2</sub>
+```{r Adjusted Mass, include=FALSE}
 #Adjusted means 
 #mean of the covariate,  
 X.mean <- mean(data$Mass_g) 
@@ -161,8 +145,6 @@ X.mean <- mean(data$Mass_g)
 model1 <- lm(SMR_Hour ~ Mass_g, data)
 anova(model1)
 summary(model1)
-
-## 0.018410
 
 #fits linear prediction lines (equal slopes)
 pred1 <- predict(model1) 
@@ -178,42 +160,46 @@ ggplot(data = cbind(data, pred1), aes(x= Mass_g , y= SMR_Hour))+
   ggtitle("Body Mass and VO2 with Adjusted Mean")+
  theme(plot.title = element_text(hjust=0.5))
 
-#adjust each data point to the mean of the covariate, along common slope 
-data <- data%>%mutate(adjVO2=SMR_Hour-(0.018410)*(Mass_g-X.mean))
+#adjust each data point to the mean of the covariate, along common slope
+comm.slope <-coef(model1)[2]
+data <- data%>%mutate(adjVO2=SMR_Hour-(comm.slope)*(Mass_g-X.mean))
+
 ```
 
 
-```{r}
-ggplot(data = data, aes(BaseCORT, StressCORT))+
-  geom_point(aes(size = 10))+
-  geom_smooth(method = "lm")
-
-model3 <- lm(StressCORT ~ BaseCORT, data)
-anova(model3)
-summary(model3)
-```
-
-```{r}
-ggplot(data, aes(Mass_g, RespCORT))+
+```{r plot the adjusted means, echo=FALSE, fig.height=4}
+ggplot(data = cbind(data, pred1), aes(Mass_g, SMR_Hour)) + 
   geom_point()+
-  geom_smooth(method = 'lm')
+  geom_vline(xintercept = X.mean, linetype="dashed", alpha = 0.45)+
+  geom_segment(aes(x=Mass_g, xend=X.mean, y=SMR_Hour, yend=data$adjVO2), size=.25)+
+  ggtitle("Points adjusted to mean of mass using common slope")+
+   theme(plot.title = element_text(hjust=0.5))+
+  xlab("Body Mass (g)") + ylab("Oxygen Consumption (mL O2 hour-1)")+
+  geom_smooth(method=lm, se=FALSE, color="black")+  #common slope of all points
+  theme_classic()
 
-ggplot(data = data, aes(adjVO2, RespCORT))+
-  geom_point(aes(size = 10))+
-  geom_smooth(method = "lm")
-
-# linear model using response cort and adjusted VO2
-model2 <- lm(RespCORT ~ adjVO2 + Mass_g, data = data)
-anova(model2)
-summary(model2)
+#Allometric data: there is not a 1 to 1 (isometric) relationship between mass and VO2. 
 ```
+</br> Fig 7.  Mass adjusted VO<sub>2</sub> of individuals based on mean body mass (dashed line, 385.24g) using a common slope (thick line, 0.0184).
 
-```{r}
-#glm wtih everything 
-glm1<- glm(RespCORT ~ SMR_Hour + Sex + Mass_g + Collect_Time + Base_Temp + Stress_Temp + Time_Between_Samples, family = poisson(),data)
-anova(glm1)
-summary(glm1)
+## **Summary of Results** 
+* SMR of these indiviudals is a highly significant function of body mass (p<0.05)
+* Accounting for sex, the results are borderline significant with a p-value of 0.0596 (Fig 4)  
+* The data were skewed with the large males, a graph of the log values showed data points to have a even distribution (Fig 6) validating the retention of the large male outliars for future analyses
+* The Mass Adjusted VO<sub>2</sub> removes the effects of body mass for CORT analyses
 
-```
+Next analysis would be to run global general linear models for a poisson distriubtion: the response variable being CORT level(s), and the effect variables being Mass Adjusted VO<sub>2</sub>, sex, date, time of day, collection time, base temp, stress temp, and the time between samples. 
 
-##References
+## **Discussion**
+<div style= "float:left;position: relative;">
+![Fig 8. Blood draw from the caudel vien of a cottonmouth snake](photo/blood.jpg)
+</div>
+The boardline significant p-values for sex effects could be due to the extreme sexual body size dimorphism of the species: the largest male weighing 1535g and the largest female weighing 463g. By using the Mass Adjusted VO<sub>2</sub>, we are able to remove the effects of body mass from the proposed analysis of metablic rate and CORT levels. Additional covariates could potential be affecting CORT levels and will be included in future analyses. Extensive research has assessed seasonal influences on stress levels in both ecto- and endo-therms and will be taken into account through date of capture and the time of day as covariates.
+</br>
+</br>Much of what is known about the relationship between GCs and metabolism is based on theory and applied applications of GCs. This techniques involves either the external application of CORT or the use of an internal CORT pellet to assess the physiological effects of increased CORT levels. The use of these methods however do not take into account the individual variations in CORT response. Jimeno et al found an association between natural produced CORT and metablic rate in zebra finches using similar methods to this study. Assessing the intra-individual variation in this manner can provide additional insights into a more informative relationship between hormonal responses to stressful environments and their energic requirements.
+</br>
+</br>
+</br>
+
+## **References**
+https://github.com/MollyARichard/AgPi-SMR-Prelim/blob/master/README.md
