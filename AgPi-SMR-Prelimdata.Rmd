@@ -41,7 +41,7 @@ data <- read_csv("prelimdata.csv")
 ```
 
 ```{r Clean up data, include=FALSE}
-data <- slice(data, -29)
+data <- slice(data, -29) # Nubz <3
 data <- slice(data, -55)
 data <- within(data, SMR_Hour <- Average_MR_min*60)
 data <- within(data, RespCORT <- (StressCORT-BaseCORT))
@@ -86,13 +86,13 @@ leaflet(data) %>%
 ```
 Fig 3. Interactive map displaying capture locations with in Bicentennial Trail Wetland
 </div>
-* Cottonmouth snakes (n=52) collected from a back-water in Cheatham County, Tennessee
-* 100-200μl baseline blood sample to analyze circulating CORT levels from the caudal vein 
-* Stress sample collected one hour after the initial sample
+* Cottonmouth snakes (n=54; 26 males, 27 females) collected from a back-water in Cheatham County, Tennessee
+* 100-200μl baseline blood sample collected from the caudal vein 
+* Stress sample collected one hour after one hour of confinement 
 * ELISA corticosterone assay kits used to analyze plasma samples
 * Metabolic rates measured by rates of oxygen consumption (VO<sub>2</sub>)
 * Snakes were measured 8 times over a 24-hour period; most level 15 minutes of each 30-minute sample period was used to calculate the rate of gas exchange
-* Mean of the three lowest 15-minute measures during the trial period was determined SMR
+* Mean of the three lowest 15-minute measurements used to determined SMR
 </br>
 </br>
 
@@ -188,10 +188,10 @@ ggplot(data = cbind(data, pred1), aes(Mass_g, SMR_Hour)) +
 ## **Summary of Results** 
 * SMR of these indiviudals is a highly significant function of body mass (p<0.05)
 * Accounting for sex, the results are borderline significant with a p-value of 0.0596 (Fig 4)  
-* The data were skewed with the large males, a graph of the log values showed data points to have a even distribution (Fig 6) validating the retention of the large male outliars for future analyses
+* The data is skewed with the large males, a graph of the log values showed data points to have a even distribution (Fig 6) validating the retention of the large male outliars for future analyses
 * The Mass Adjusted VO<sub>2</sub> removes the effects of body mass for CORT analyses
 
-Next analysis would be to run global general linear models for a poisson distriubtion: the response variable being CORT level(s), and the effect variables being Mass Adjusted VO<sub>2</sub>, sex, date, time of day, collection time, base temp, stress temp, and the time between samples. 
+Next analysis would be to run global general linear models for a poisson distribution: the response variable being CORT level(s), and the effect variables being Mass Adjusted VO<sub>2</sub>, sex, date, time of day, collection time, base temp, stress temp, and the time between samples. 
 
 ## **Discussion**
 <div style= "float:left;position: relative;">
@@ -199,7 +199,7 @@ Next analysis would be to run global general linear models for a poisson distriu
 </div>
 The boardline significant p-values for sex effects could be due to the extreme sexual body size dimorphism of the species: the largest male weighing 1535g and the largest female weighing 463g. By using the Mass Adjusted VO<sub>2</sub>, we are able to remove the effects of body mass from the proposed analysis of metablic rate and CORT levels. Additional covariates could potential be affecting CORT levels and will be included in future analyses. Extensive research has assessed seasonal influences on stress levels in both ecto- and endo-therms and will be taken into account through date of capture and the time of day as covariates.
 </br>
-</br>Much of what is known about the relationship between GCs and metabolism is based on theory and applied applications of GCs. This techniques involves either the external application of CORT or the use of an internal CORT pellet to assess the physiological effects of increased CORT levels. The use of these methods however do not take into account the individual variations in CORT response. Jimeno et al found an association between natural produced CORT and metablic rate in zebra finches using similar methods to this study. Assessing the intra-individual variation in this manner can provide additional insights into a more informative relationship between hormonal responses to stressful environments and their energic requirements.
+</br>Much of what is known about the relationship between GCs and metabolism is based on theory and applied applications of glucocorticoids. This techniques involves either the external application of CORT or the implantation of an internal CORT pellet to assess the physiological effects of increased CORT levels. The use of these methods however do not take into account the individual variations in CORT response. Jimeno et al found an association between natural produced CORT and metablic rate in zebra finches using similar methods to this study. Assessing the intra-individual variation in this manner can provide additional insights into a more informative relationship between hormonal responses to stressful environments and their energic requirements.
 </br>
 </br>
 </br>
